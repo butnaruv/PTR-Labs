@@ -1,0 +1,13 @@
+*.class
+project/project/
+project/target/
+target/
+*.log
+*.iml
+*.ipr
+*.iws
+.idea
+.bloop
+.bsp
+.metals
+project/metals.sbt
