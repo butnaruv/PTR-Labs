@@ -1,4 +1,4 @@
-package FirstLab.Week2
+package FirstLab.Week2.Minimal
 
 import scala.math.sqrt
 

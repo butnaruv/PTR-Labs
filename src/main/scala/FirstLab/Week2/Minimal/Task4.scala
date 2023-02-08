@@ -1,4 +1,4 @@
-package FirstLab.Week2
+package FirstLab.Week2.Minimal
 
 //Task 4 -> Compute sum of unique elements in a list
 object Task4 extends App {

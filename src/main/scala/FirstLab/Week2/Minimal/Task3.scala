@@ -1,4 +1,4 @@
-package FirstLab.Week2
+package FirstLab.Week2.Minimal
 
 //Task 3 -> reverse a list
 object Task3 extends App {

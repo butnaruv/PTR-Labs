@@ -1,4 +1,4 @@
-package FirstLab.Week2
+package FirstLab.Week2.Minimal
 
 import scala.math.pow
 
@@ -17,4 +17,3 @@ object Task2 extends App {
     return ((cylinderArea * 10000).round / 10000.toDouble)
   }
 }
-

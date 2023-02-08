@@ -1,4 +1,4 @@
-package FirstLab.Week2
+package FirstLab.Week2.Minimal
 
 //Task 9 ->
 object Task9 extends App {
@@ -13,7 +13,7 @@ object Task9 extends App {
       newIndex = ((i - n) + myList.length) % myList.length
       newList(newIndex) = myList(i)
     }
-    for(i <- newList)
-    print(i + " ")
+    for (i <- newList)
+      print(i + " ")
   }
 }
