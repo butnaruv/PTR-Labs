@@ -13,18 +13,4 @@ object BonusTask1 extends App{
     }
     for (e <- list) print(e + " ")
   }
-
 }
-
-//List<Integer> primeFactors = new ArrayList<>();
-//for (int i = 2; i <= n / i; i++) {
-//  while (n % i == 0) {
-//    primeFactors.add(i);
-//    n = n / i;
-//  }
-//}
-//if (n > 1) {
-//  primeFactors.add(n);
-//}
-//return primeFactors;
-//}
