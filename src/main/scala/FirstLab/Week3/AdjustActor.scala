@@ -8,9 +8,9 @@ class AdjustActor extends Actor {
   def receive ={
 
     case message : String => {
-      print("Received: ")
-      for(e <- message) print(e.toLower)
-      println()
+      var adjustedMessage = ""
+      for(e <- message) adjustedMessage += e.toLower
+      println("Received: " + adjustedMessage)
     }
     case message : Int =>
       println("Received: " + (message.toInt + 1))
