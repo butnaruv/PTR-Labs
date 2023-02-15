@@ -53,7 +53,7 @@ object Main extends App {
     BonusTasks.commonPrefix(Array("flower", "flow", "flight"))
     BonusTasks.commonPrefix(Array("alpha", "beta", "gamma"))
 
-    BonusTasks.toRoman(13)
+    BonusTasks.toRoman(999)
 
     BonusTasks.factorize(13)
     BonusTasks.factorize(42)

@@ -1,6 +1,6 @@
 import scala.collection.mutable
 
-object MainTasks{
+object MainTasks {
   def removeConsecutiveDuplicates(myList: Array[Int]): Unit = {
     print(myList(0) + " ")
     for (i <- 1 until myList.length) {
@@ -27,16 +27,15 @@ object MainTasks{
   }
 
   def encode(input: String, key: Int): Unit = {
-
     for (e <- input) {
-      print((e.toInt + key).toChar)
+      print(((e.toInt + key - 97) % 26 + 97).toChar)
     }
     println()
   }
 
   def decode(input: String, key: Int): Unit = {
     for (e <- input) {
-      print((e.toInt - key).toChar)
+      print(((e.toInt - key - 97) % 26 + 97).toChar)
     }
     println()
   }
