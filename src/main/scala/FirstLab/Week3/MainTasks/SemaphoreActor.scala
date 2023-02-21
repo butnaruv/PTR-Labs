@@ -5,7 +5,7 @@ import akka.actor._
 class SemaphoreActor(counter: Int) extends Actor {
   var internCounter = counter
   var space = 0
-//  var internQueue = Array()[Int]
+  //  var internQueue = Array()[Int]
 
   def receive = {
     case "acquireSemaphore" =>
@@ -20,9 +20,11 @@ class SemaphoreActor(counter: Int) extends Actor {
       if (internCounter < counter) {
         internCounter += 1
         println("Semaphore is released")
-      }else println("Semaphore is empty. It can not be released")
+      } else println("Semaphore is empty. It can not be released")
+    case message: Any => println(s"Message received is $message")
   }
 }
+
 object SemaphoreActor {
-  def props(counter:Int): Props = Props(new SemaphoreActor(counter))
+  def props(counter: Int): Props = Props(new SemaphoreActor(counter))
 }

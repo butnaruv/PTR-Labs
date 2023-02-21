@@ -6,6 +6,8 @@ import FirstLab.Week3.MinimalTasks.MonitorigActors.{FirstActor, SecondActor}
 import FirstLab.Week3.MinimalTasks.{AdjustActor, ComputeAverageActor, MyFirstActor}
 import akka.actor._
 
+import scala.collection.mutable.ArrayBuffer
+
 object Main {
   def main(args: Array[String]): Unit = {
         println("--- Minimal Tasks ---")
@@ -63,11 +65,14 @@ object Main {
   }
 
   def MainTask2(){
-    val mutex = create_semaphore(3)
-    acquire(mutex)
-    acquire(mutex)
-    release(mutex)
-    release(mutex)
+    val mutex = create_semaphore(1)
+    var queueOfMessages = ArrayBuffer(1,2,3,4)
+    while(!queueOfMessages.isEmpty){
+      acquire(mutex)
+      mutex ! queueOfMessages(0)
+      queueOfMessages.remove(0)
+      release(mutex)
+    }
   }
 
   def new_queue(): ActorRef = {
