@@ -1,20 +1,22 @@
 package FirstLab.Week3
 
 
-import FirstLab.Week3.MainTasks.QueueActor
+import FirstLab.Week3.MainTasks.{QueueActor, SemaphoreActor}
 import FirstLab.Week3.MinimalTasks.MonitorigActors.{FirstActor, SecondActor}
 import FirstLab.Week3.MinimalTasks.{AdjustActor, ComputeAverageActor, MyFirstActor}
 import akka.actor._
 
 object Main {
   def main(args: Array[String]): Unit = {
-    println("--- Minimal Tasks ---")
-    MinimalTask1()
-    MinimalTask2()
-    MinimalTask3()
-    MinimalTask4()
-    println("--- Main Tasks ---")
-    MainTask1()
+        println("--- Minimal Tasks ---")
+        MinimalTask1()
+        MinimalTask2()
+        MinimalTask3()
+        MinimalTask4()
+        println("--- Main Tasks ---")
+        MainTask1()
+        MainTask2()
+
 
   }
 
@@ -52,7 +54,7 @@ object Main {
     averageComputer ! 10
   }
 
-  def MainTask1(): Unit ={
+  def MainTask1(): Unit = {
     val Pid = new_queue()
     push(Pid, 4)
     push(Pid, 5)
@@ -60,17 +62,39 @@ object Main {
     pop(Pid)
   }
 
-  def new_queue(): ActorRef={
+  def MainTask2(){
+    val mutex = create_semaphore(3)
+    acquire(mutex)
+    acquire(mutex)
+    release(mutex)
+    release(mutex)
+  }
+
+  def new_queue(): ActorRef = {
     val system = ActorSystem("NewQueueActor")
     return system.actorOf(QueueActor.props, "queueActor")
   }
 
-  def push(actor: ActorRef, number : Int): Unit ={
+  def push(actor: ActorRef, number: Int): Unit = {
     actor ! number
   }
 
-  def pop(actor: ActorRef): Unit ={
-    actor ! "push"
+  def pop(actor: ActorRef): Unit = {
+    actor ! "pop"
+  }
+
+  def create_semaphore(counter: Int): ActorRef = {
+    val system = ActorSystem("SemaphoreActor")
+    return system.actorOf(SemaphoreActor.props(counter), "semaphoreActor")
+    //    return system.actorOf(Props(new SemaphoreActor(counter)))
+  }
+
+  def acquire(actor: ActorRef): Unit = {
+    actor ! "acquireSemaphore"
+  }
+
+  def release(actor: ActorRef): Unit = {
+    actor ! "releaseSemaphore"
   }
 }
 
