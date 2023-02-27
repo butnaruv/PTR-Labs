@@ -11,6 +11,7 @@ class QueueActor extends Actor {
     case message: Int =>
       queue = queue :+ message
       println("ok ")
+      println(queue)
     case "pop" => {
       if (queue.isEmpty) {
         println("No elements in queue")
@@ -18,6 +19,7 @@ class QueueActor extends Actor {
       else {
         println(queue(0))
         queue.remove(0)
+        println(queue)
       }
     }
   }

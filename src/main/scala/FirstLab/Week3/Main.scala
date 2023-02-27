@@ -10,12 +10,13 @@ import scala.collection.mutable.ArrayBuffer
 
 object Main {
   def main(args: Array[String]): Unit = {
-        println("--- Minimal Tasks ---")
+
+
         MinimalTask1()
         MinimalTask2()
         MinimalTask3()
         MinimalTask4()
-        println("--- Main Tasks ---")
+
         MainTask1()
         MainTask2()
 
