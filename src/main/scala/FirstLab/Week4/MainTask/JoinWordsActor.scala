@@ -11,11 +11,15 @@ class JoinWordsActor extends Actor {
 
   override def receive: Receive = {
     case message: ArrayBuffer[String] =>
+      println("3. Am primit mesajul: " + message)
+
       for (word <- message) {
         if (word != message.last) result = result + word + " "
         else result = result + word
       }
-      println(result)
+      println("3. Am returnat mesajul " + result)
+      Thread.sleep(1000)
+      result = ""
   }
 }
 

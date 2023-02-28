@@ -12,6 +12,7 @@ class LowercaseMessageActor extends Actor {
 
   override def receive: Receive = {
     case message: ArrayBuffer[String] =>
+      println("2. Am primit mesajul: " + message)
       for (word <- message) {
         for (char <- word.toLowerCase()) {
           if (char == 'm') newWord += 'n'
@@ -21,8 +22,10 @@ class LowercaseMessageActor extends Actor {
         listOfLowercaseWords += newWord
         newWord = ""
       }
-      println(listOfLowercaseWords)
+      println("2. Am returnat mesajul " + listOfLowercaseWords)
       sender ! listOfLowercaseWords
+      Thread.sleep(1000)
+      listOfLowercaseWords.clear()
   }
 }
 

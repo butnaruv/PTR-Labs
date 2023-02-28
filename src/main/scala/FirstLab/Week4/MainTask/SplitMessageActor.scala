@@ -11,8 +11,11 @@ class SplitMessageActor extends Actor {
   println("First Actor is here!")
 
   override def receive: Receive = {
-    case "" => throw new Exception("Something went wrong!")
+    case "" =>
+      sender() ! restartMe
+      try throw new Exception("Something went wrong!")
     case message: String =>
+      println("1. Am primit mesajul: " + message)
       val newMessage = message.trim.replaceAll(" +", " ") + " "
       for (c <- newMessage) {
         if (c != ' ') {
@@ -23,8 +26,10 @@ class SplitMessageActor extends Actor {
           string = ""
         }
       }
-      println(listOfWords)
+      println("1. Am returnat mesajul: " + listOfWords)
       sender ! listOfWords
+      Thread.sleep(1000)
+      listOfWords.clear()
   }
 }
 

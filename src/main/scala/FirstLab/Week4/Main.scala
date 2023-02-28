@@ -6,6 +6,8 @@ import akka.actor.ActorSystem
 
 object Main extends App {
   {
+    MinimalTask()
+    Thread.sleep(3000)
     MainTask();
 
   }
@@ -22,12 +24,12 @@ object Main extends App {
   }
 
   def MainTask(): Unit = {
-    val system = ActorSystem("StringManipulatin")
+    val system = ActorSystem("StringManipulation")
     val stringManipulationSupervisor = system.actorOf(StringManipulationSupervisor.props, "stringManipulationSupervisor")
     stringManipulationSupervisor ! "I am a real monster"
-    Thread.sleep(1000)
+    Thread.sleep(7000)
     stringManipulationSupervisor ! ""
-    Thread.sleep(1000)
-    stringManipulationSupervisor ! "I am a real monster"
+    Thread.sleep(7000)
+    stringManipulationSupervisor ! "I am a reAl monSTer"
   }
 }
