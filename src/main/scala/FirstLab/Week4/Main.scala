@@ -17,7 +17,9 @@ object Main extends App {
     val supervisor = system.actorOf(SupervisorActor.props, "supervisor")
     supervisor ! CreateWorker
     supervisor ! SendMessage("Hello", 1)
+    Thread.sleep(1000)
     supervisor ! SendMessage("Hello", 6)
+    Thread.sleep(1000)
     supervisor ! SendKill(1)
     Thread.sleep(1000)
     supervisor ! SendMessage("Noroc", 1)

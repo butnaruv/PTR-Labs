@@ -25,14 +25,18 @@ class SupervisorActor extends Actor {
         listOfActors += context.actorOf(WorkerActor.props)
         context.actorOf(WorkerActor.props)
       }
-      println(listOfActors)
+      println(s"${listOfActors.length} of actors are created")
 
       context.actorOf(WorkerActor.props)
     case SendMessage(message, index) => {
-      if (index < listOfActors.length) listOfActors(index) ! message
+      if (index < listOfActors.length) {
+        println(s"Message sent to actor $index")
+        listOfActors(index) ! message
+      }
       else println(s"Actor $index does not exist")
     }
     case SendKill(index) => {
+      println(s"Kill message sent to actor $index")
       listOfActors(index) ! "kill"
     }
   }
