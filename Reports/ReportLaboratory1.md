@@ -310,6 +310,178 @@ The receive method of this actor is defined using a pattern matching expression.
 
 &ensp;&ensp;&ensp; _pop(actor: ActorRef)_ function send a "pop" message to the actor of reference _actor: ActorRef_ . And the actor then will diplay the first element from its queue.
 
+## P0W4
+
+**Minimal Task** -- Create a supervised pool of identical worker actors. The number of actors
+is static, given at initialization. Workers should be individually addressable. Worker actors
+should echo any message they receive. If an actor dies (by receiving a “kill” message), it should
+be restarted by the supervisor
+
+```scala
+class WorkerActor extends Actor {
+  override def receive: Receive = {
+    case "kill" => {
+      throw new Exception("Something went wrong!")
+    }
+    case message: String => println("I received " + message)
+  }
+}
+
+```
+
+&ensp;&ensp;&ensp; This code defines an actor class _WorkerActor_ which override the function _receive()_. It works based on two cases:
+  + if the message is equal to string "kill", it will throw an exception and the superviser will manage it.
+  + if the message is any other string, the actor will print the message.
+
+  &ensp;&ensp;&ensp; All the worker actors will be created by a superviser. In order to determine their creation, in the function receive there is implemented a case class _CreateWorker()_. 
+
+```scala
+  case CreateWorker =>
+    for (i <- 0 until numberOfActors) {      
+      listOfActors += context.actorOf(WorkerActor.props)
+      context.actorOf(WorkerActor.props)
+      }
+    println(s"${listOfActors.length} of actors are created")
+```
+
+&ensp;&ensp;&ensp; This case class implements a for loop, in which one by one an worker actor is created and added to a list.
+
+```scala
+  case SendMessage(message, index) => {
+    if (index < listOfActors.length) {
+      println(s"Message sent to actor $index")
+      listOfActors(index) ! message
+    }
+    else println(s"Actor $index does not exist")
+  }
+```
+
+&ensp;&ensp;&ensp; Another case class of the superviser is _SendMessage(message: String, index:Int)_, which takes as parameters the message to be sent to the worker and the index of that worker in the list. In case the actor does not exists, the message can not be sent, so a message of absence of the actor will be displayed.  
+
+```scala
+  case SendKill(index) => 
+    println(s"Kill message sent to actor $index")
+    listOfActors(index) ! "kill"
+```
+
+&ensp;&ensp;&ensp; The last case class in the receive function is _SendKill(index: int)_ which takes as parameter the index of the actor in the list. When the superviser receive such a message, it should send a strin "kill". This will condition the worker actor to throw the exception. Here the managing actor implementation goes.
+
+```scala
+  override val supervisorStrategy = OneForOneStrategy() {
+    case _: Exception => Restart
+  }
+```
+
+&ensp;&ensp;&ensp; In this code the superviser establish the supervisorStrategy: _OneForOneStrategy()_  which means that if a child actor throws an exception, only that child actor will be affected, and the other child actors will continue to run. In our case, the worker with "problems" will be restarted. 
+
+**Main Task** -- Create a supervised processing line to clean messy strings. 
++ The first worker in
+the line would split the string by any white spaces (similar to Python’s str.split method).
++ The second actor will lowercase all words and swap all m’s and n’s (you nomster!).
++ The third actor will join back the sentence with one space between words (similar to Python’s str.join
+method). 
+
+Each worker will receive as input the previous actor’s output, the last actor printing the result on screen. If any of the workers die because it encounters an error, the whole
+processing line needs to be restarted.
+
+```scala
+class SplitMessageActor extends Actor {
+  var string = ""
+  var listOfWords = new ArrayBuffer[String]()
+  println("First Actor is here!")
+
+  override def receive: Receive = {
+    case "" =>
+      sender() ! restartMe()
+      try throw new Exception("Something went wrong!")
+    case message: String =>
+      println("1. Am primit mesajul: " + message)
+      val newMessage = message.trim.replaceAll(" +", " ") + " "
+      for (c <- newMessage) {
+        if (c != ' ') {
+          string += c
+        }
+        else if (c == ' ') {
+          listOfWords += string
+          string = ""
+        }
+      }
+      println("1. Am returnat mesajul: " + listOfWords)
+      sender ! listOfWords
+      Thread.sleep(1000)
+      listOfWords.clear()
+  }
+}
+```
+
+&ensp;&ensp;&ensp; _SplitMessageActor()_ is the actor responsible for splitting the message in words. The function receive has 2 cases:
+ + If the message is empty, the actor throws an exception
+ + If the message is any other string, it will be processed. In a for loop, each letter is iterated, and added to a temporal variable which forms the word. When the " " is reached, the value of the temporal variable is stored in an ArrayBuffer, and the variable is reinitialised. At the end, the message is sent to the _sender()_- the superviser of workers. It will forward the message to the next worker.
+
+ ```scala
+class LowercaseMessageActor extends Actor {
+  var listOfLowercaseWords = ArrayBuffer[String]()
+  var newWord = ""
+
+  println("Second Actor is here!")
+
+  override def receive: Receive = {
+    case message: ArrayBuffer[String] =>
+      println("2. Am primit mesajul: " + message)
+      for (word <- message) {
+        for (char <- word.toLowerCase()) {
+          if (char == 'm') newWord += 'n'
+          else if (char == 'n') newWord += 'm'
+          else newWord += char
+        }
+        listOfLowercaseWords += newWord
+        newWord = ""
+      }
+      println("2. Am returnat mesajul " + listOfLowercaseWords)
+      sender ! listOfLowercaseWords
+      Thread.sleep(1000)
+      listOfLowercaseWords.clear()
+  }
+}
+```
+
+&ensp;&ensp;&ensp; _LowercaseActor_ is responsible for swaping m's and n's and for tranform all letters in lowercase. For swaping, each word is iterated char by char, and if an m is find, it is replaced by an n and vice versa. The word obtained is stored in an ArrayBuffer and it is sent as message to the superviser, which in turn forward it to the next worker.
+
+```scala
+class JoinWordsActor extends Actor {
+  var result = ""
+
+  println("Third Actor is here!")
+
+  override def receive: Receive = {
+    case message: ArrayBuffer[String] =>
+      println("3. Am primit mesajul: " + message)
+
+      for (word <- message) {
+        if (word != message.last) result = result + word + " "
+        else result = result + word
+      }
+      println("3. Am returnat mesajul " + result)
+      Thread.sleep(1000)
+      result = ""
+  }
+}
+```
+
+&ensp;&ensp;&ensp; _JoinWords_ actor is responsible for concatenating all words in a sentence and for diplaying it. It iterates the buffer received and concatenate each element,followed by a space, to a string. If the element is last in the buffer, then  it will not be followed by space. In the end the result is returned.
+
+&ensp;&ensp;&ensp;The behavior of the superviser has nothing special. It just create one actor of each type and is responsible for the order in which actors process the string. The specific part is the error handling of any child. For this, a _supervisionStrategy_ is defined.
+
+```scala
+  override val supervisorStrategy = AllForOneStrategy() {
+    case _: Exception => Restart
+  }
+```
+
+&ensp;&ensp;&ensp; As we can see in the code, the _supervisionStrategy_ is set to _AllForOneStrategy()_, a method to apply a specific change to all actors from the system if any of the actors throws an exception. Thus, the superviser will restart all the workers if any of them will fail. 
+
+
+
 ## Conclusion
 
 Here goes your conclusion about this project..
