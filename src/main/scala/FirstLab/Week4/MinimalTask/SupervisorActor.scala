@@ -12,7 +12,6 @@ case class SendMessage(message: String, index: Int)
 case class SendKill(index: Int)
 
 class SupervisorActor extends Actor {
-  private var number = 0
   private val numberOfActors = 4
   val listOfActors = new ArrayBuffer[ActorRef]()
   override val supervisorStrategy = OneForOneStrategy() {
@@ -35,10 +34,9 @@ class SupervisorActor extends Actor {
       }
       else println(s"Actor $index does not exist")
     }
-    case SendKill(index) => {
+    case SendKill(index) =>
       println(s"Kill message sent to actor $index")
       listOfActors(index) ! "kill"
-    }
   }
 }
 

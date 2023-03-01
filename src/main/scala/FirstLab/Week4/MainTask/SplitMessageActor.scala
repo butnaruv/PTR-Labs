@@ -12,7 +12,7 @@ class SplitMessageActor extends Actor {
 
   override def receive: Receive = {
     case "" =>
-      sender() ! restartMe
+      sender() ! restartMe()
       try throw new Exception("Something went wrong!")
     case message: String =>
       println("1. Am primit mesajul: " + message)
