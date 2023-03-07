@@ -480,12 +480,100 @@ class JoinWordsActor extends Actor {
 
 &ensp;&ensp;&ensp; As we can see in the code, the _supervisionStrategy_ is set to _AllForOneStrategy()_, a method to apply a specific change to all actors from the system if any of the actors throws an exception. Thus, the superviser will restart all the workers if any of them will fail. 
 
+## P0W5
+**Minimal Task 1** -- Write an application that would visit this link. Print out the HTTP response
+status code, response headers and response body.
+
+```scala
+    val url = new URL("https://quotes.toscrape.com/")
+    val connection = url.openConnection().asInstanceOf[HttpURLConnection]
+    connection.setRequestMethod("GET")
+    println(s"Response status code: ${connection.getResponseCode}")
+    println("Response headers:")
+    connection.getHeaderFields.forEach((key, value) => println(s"$key: $value"))
+    body = scala.io.Source.fromInputStream(connection.getInputStream).mkString
+    println(s"Response body: $body")
+    connection.disconnect()
+
+```
+
+&ensp;&ensp;&ensp; This function implements a HTTP GET request to the URL "https://quotes.toscrape.com/" using the HttpURLConnection class. First, it opens a connection to the URL using the _openConnection()_ method of the URL object, and casts the resulting URLConnection object to an HttpURLConnection object. Secondly it sets the request method for the connection to "GET" using the _setRequestMethod()_. Then, the request is sent to the server and the response status code is retrieved using the _getResponseCode()_ method. Finally, it retrieves the response headers and prints them out using a forEach loop. Then it retrieves the response body and prints it out.
+
+**Minimal Task 2** -- Extract all quotes from the HTTP
+response body. Collect the author of the quote, the quote text and tags. Save the data
+into a list of maps, each map representing a single quote.
+
+```scala
+val selectGeneralBlock = "<div class=\"quote\"[\\s\\S]*?<\\/div>".r
+    val selectQuotes = "<span class=\"text\" itemprop=\"text\">(“.*)<\\/span>".r
+    val selectAuthors = "itemprop=\"author\">(.*)<\\/small>".r
+    val selectTags = "<a class=\"tag\".*?>(.*)<\\/a>".r
+
+```
+
+&ensp;&ensp;&ensp; In my opinion the most difficult part of this task were to select the information needed and for this I used Regular Expression. _selectGeneralBlock_ select only the `<div>` tags with class = "quote". Then, for quotes, authors and tags I identified a pattern and used it to find all the elements which corresponds to the needed information.
+
+```scala
+        val listOfMaps = ArrayBuffer[Map[String, String]]()
+    val listOfQuotes = selectGeneralBlock.findAllIn(body).toList
+
+    for (element <- listOfQuotes) {
+      val quote = selectQuotes.findFirstMatchIn(element).map(_.group(1)).fold("")(_.toString)
+      val author = selectAuthors.findFirstMatchIn(element).map(_.group(1)).fold("")(_.toString)
+      val tags = selectTags.findAllMatchIn(element).map(_.group(1)).mkString("; ")
+      listOfMaps.addOne(Map("quote" -> quote, "author" -> author, "tags" -> tags))
+    }
+```
+&ensp;&ensp;&ensp; Then, in a list all the general blocks are find using _findAllin()_ method, and all of them are stored. Iterating this list, the function searches in each block the quote, the author of it and the tags using regular expression defined before. All this information is stored in  _listOfMaps_ variable.
+
+**Minimal Task 3** -- Persist the list of quotes into a file.
+Encode the data into JSON format. Name the file quotes.json.
+
+```scala
+ val jsonFormat = Json.prettyPrint(Json.toJson(globalListOfMaps))
+    val jsonFile = new File("quotes.json")
+    val writer = new FileWriter(jsonFile)
+    writer.write(jsonFormat.toString())
+    writer.close()
+
+```
+&ensp;&ensp;&ensp;This block of Scala code writes a list of maps to a JSON file:
+ + Convert the list of maps globalListOfMaps to a JSON string using the Play JSON library.
+
+ + Create a new File object for the JSON file.
+
+ + Create a new FileWriter object for the JSON file.
+
++ Write the JSON string to the file using the write() method of the FileWriter object.
+
++ Close the FileWriter object.
+
+The resulting JSON file will contain the data in a structured format that can be easily read and processed by other programs.
+
+
 
 
 ## Conclusion
 
-Here goes your conclusion about this project..
+In conclusion, taking the first steps in studying Scala involves getting familiar with its key concepts such as the Actor model, data types and data structures such as lists or buffers. In addition, being able to make HTTP requests, retrieve data, parse it to JSON format, and write the data to files are also fundamental skills that are often required in real-world applications.
+
+Understanding the Actor model is essential to writing concurrent, parallel, and distributed systems in Scala. It involves learning how to use actors as basic units of computation that communicate with each other using messages.
+
+When operating with data types and structures such as lists or buffers, it is important to understand how to use their built-in methods to manipulate data efficiently. This can include operations such as filtering, mapping, reducing, or folding.
+
+Making HTTP requests is often necessary when working with web applications or REST APIs. In Scala, this can be done using the built-in Java libraries or more advanced libraries such as Akka HTTP or Play Framework.
+
+After making an HTTP request, it is often necessary to parse the response data into a structured format such as JSON. Scala provides several libraries such as Play JSON or Circe for this purpose.
+
+Finally, once the data has been parsed and processed, it can be written to files for further analysis or storage. This involves working with file I/O operations such as creating or opening files, writing data to files, and closing them when done.
+
+Overall, taking the first steps in studying Scala can be challenging, but it provides a solid foundation for developing scalable, concurrent, and distributed applications.
 
 ## Bibliography
 
-Here go all links / references to stuff you've used to study for this project..
+[Scala Official Documentation](https://docs.scala-lang.org/overviews/collections/introduction.html)  
+[Scala Arrays](https://www.tutorialspoint.com/scala/scala_arrays.htm)  
+[Scala Arrays](https://docs.scala-lang.org/overviews/collections/arrays.html)  
+[Akka classic official documentation](https://doc.akka.io/docs/akka/current/actors.html)  
+[Java.net official documentation](https://docs.oracle.com/javase/7/docs/api/java/net/package-summary.html)  
+[Regular Expressions](https://regex101.com/)
