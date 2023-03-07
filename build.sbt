@@ -9,4 +9,5 @@ lazy val root = (project in file("."))
 //dependencies
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % Test
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.6.16"
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.4"
 
