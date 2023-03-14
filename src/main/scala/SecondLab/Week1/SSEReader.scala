@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class Start(url: String)
 
-class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter : ActorRef) extends Actor {
+class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter: ActorRef) extends Actor {
   override def receive: Receive = {
     case Start(url) =>
       implicit val classicSystem: akka.actor.ClassicActorSystemProvider = ActorSystem()
@@ -20,8 +20,8 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter : A
       val source: Future[Done] = responseFuture.flatMap { response =>
         val sourceByteString: Source[ByteString, Any]#Repr[String] = response.entity.dataBytes.map(_.utf8String)
         val sink = Sink.foreach[String] { (tweet: String) =>
-            //println(self.path.name)
-            ssePrinter ! self.path.name + " " + tweet
+          //println(self.path.name)
+          ssePrinter ! "From " + self.path.name + " : " + tweet
         }
         sourceByteString.runWith(sink)
       }
@@ -29,5 +29,5 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter : A
 }
 
 object SSEReader {
-  def props(implicit mat: Materializer, ec: ExecutionContext, ssePrinter : ActorRef): Props = Props(new SSEReader())
+  def props(implicit mat: Materializer, ec: ExecutionContext, ssePrinter: ActorRef): Props = Props(new SSEReader())
 }
