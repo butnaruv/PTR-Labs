@@ -11,6 +11,8 @@ class SSEPrinter extends Actor {
       println(message)
       println("I will sleep for " + randomInterval + " ms.")
       Thread.sleep(randomInterval)
+
+    case _ => throw new Exception("Something went wrong!")
   }
 }
 

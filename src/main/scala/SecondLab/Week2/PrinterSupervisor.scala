@@ -1,15 +1,24 @@
-package SecondLab.Week1
+package SecondLab.Week2
 
-import FirstLab.Week4.MinimalTask.CreateWorker
-import akka.actor.{Actor, ActorRef, Props}
+import SecondLab.Week1.SSEPrinter
+import akka.actor.SupervisorStrategy.Restart
+import akka.actor.{Actor, ActorRef, OneForOneStrategy, Props}
 
 import scala.collection.mutable.ArrayBuffer
 
 case object CreatePrinters
 
+case object SendKill
+
+case class SendTo(message: String, actorIndex: Int)
+
 class PrinterSupervisor extends Actor {
   val listOfActors = new ArrayBuffer[ActorRef]()
   var actorIndex = 0
+
+  override val supervisorStrategy = OneForOneStrategy() {
+    case _: Exception => Restart
+  }
 
   override def receive: Receive = {
     case CreatePrinters =>
@@ -18,16 +27,9 @@ class PrinterSupervisor extends Actor {
         context.actorOf(SSEPrinter.props)
       }
       println(listOfActors)
-    //context.actorOf(SSEPrinter.props)
 
-    case message: String => if (actorIndex < listOfActors.length) {
-      listOfActors(actorIndex) ! message
-      actorIndex += 1
-    } else {
-      actorIndex = 0
-      listOfActors(actorIndex) ! message
-      actorIndex += 1
-    }
+    case SendTo(message, actorIndex) => listOfActors(actorIndex) ! message
+
   }
 }
 
