@@ -11,9 +11,10 @@ object Main extends App {
     val system = ActorSystem("tweetsManipulation")
     implicit val materializer: Materializer = Materializer.createMaterializer(system)
     val ssePrinter = system.actorOf(SSEPrinter.props(), "ssePrinter")
-    val sseReader = system.actorOf(SSEReader.props(materializer, global, ssePrinter), "sseReader")
-    sseReader ! Start("http://localhost:4000/tweets/1")
-
+    val sseReader1 = system.actorOf(SSEReader.props(materializer, global, ssePrinter), "sseReader1")
+    val sseReader2 = system.actorOf(SSEReader.props(materializer, global, ssePrinter), "sseReader2")
+    sseReader1 ! Start("http://localhost:4000/tweets/1")
+    sseReader2 ! Start("http://localhost:4000/tweets/2")
   }
 }
 
