@@ -20,8 +20,8 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter : A
       val source: Future[Done] = responseFuture.flatMap { response =>
         val sourceByteString: Source[ByteString, Any]#Repr[String] = response.entity.dataBytes.map(_.utf8String)
         val sink = Sink.foreach[String] { (tweet: String) =>
-            println(self.path.name)
-            ssePrinter ! tweet
+            //println(self.path.name)
+            ssePrinter ! self.path.name + " " + tweet
         }
         sourceByteString.runWith(sink)
       }

@@ -1,11 +1,15 @@
 package SecondLab.Week1
 
 import akka.actor.{Actor, Props}
-import akka.actor.FSM.Event
+import scala.util.Random
 
-class SSEPrinter extends Actor{
+class SSEPrinter extends Actor {
   override def receive: Receive = {
-    case message : String => println(message)
+    case message: String =>
+      val randomInterval = new Random().nextInt(46) + 5
+      println(message)
+      println("I will sleep for " + randomInterval + " ms.")
+      Thread.sleep(randomInterval)
   }
 }
 object SSEPrinter{
