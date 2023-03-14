@@ -20,8 +20,10 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter: Ac
       val source: Future[Done] = responseFuture.flatMap { response =>
         val sourceByteString: Source[ByteString, Any]#Repr[String] = response.entity.dataBytes.map(_.utf8String)
         val sink = Sink.foreach[String] { (tweet: String) =>
-          //println(self.path.name)
-          ssePrinter ! "From " + self.path.name + " : " + tweet
+
+          val selectTweet = "\"text\":[\\s\\S](.*?),\"source".r
+          val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
+          ssePrinter ! "From " + self.path.name + " : " + selectedTweet
         }
         sourceByteString.runWith(sink)
       }
