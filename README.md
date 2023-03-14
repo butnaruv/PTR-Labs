@@ -16,4 +16,4 @@
 
 ## Laboratory works
 
-[Laboratory Work #1]()
+[Laboratory Work #1](https://github.com/butnaruv/PTR-Labs/blob/main/Reports/ReportLaboratory1.md)
