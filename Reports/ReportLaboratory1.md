@@ -194,8 +194,7 @@ together.
   }
 ```
 
-&ensp;&ensp;&ensp;  Firstly, the function initialise a map in which each specific roman number correspond to a key - an arabic value. The function initialise also a result variable and an integer variable to store the input. The second step consist in iteration of the sorted descending array of keys and while the number is bigger than the key, we'll add the key to the result, and the number is decreasing by the key value. We repeat this until we iterate all the keys and the value of number becomes 0.
-
+&ensp;&ensp;&ensp;  Firstly, the function initialise a map in which each specific roman number correspond to a key - an arabic value. The function initialise also a result variable and an integer variable to store the input. The second step consist in iteration of the sorted descending array of keys and while the number is bigger than the key, we'll add the key to the result, and the number is decreasing by the key value. We repeat this until we iterate all the keys and the value of number becomes 0. 
 ## P0W3
 
  **Minimal Task 1** -- Create an actor that prints on the screen any message it receives.
@@ -473,9 +472,9 @@ class JoinWordsActor extends Actor {
 &ensp;&ensp;&ensp;The behavior of the superviser has nothing special. It just create one actor of each type and is responsible for the order in which actors process the string. The specific part is the error handling of any child. For this, a _supervisionStrategy_ is defined.
 
 ```scala
-  override val supervisorStrategy = AllForOneStrategy() {
-    case _: Exception => Restart
-  }
+override val supervisorStrategy = AllForOneStrategy() {
+  case _: Exception => Restart
+}
 ```
 
 &ensp;&ensp;&ensp; As we can see in the code, the _supervisionStrategy_ is set to _AllForOneStrategy()_, a method to apply a specific change to all actors from the system if any of the actors throws an exception. Thus, the superviser will restart all the workers if any of them will fail. 
@@ -485,15 +484,15 @@ class JoinWordsActor extends Actor {
 status code, response headers and response body.
 
 ```scala
-    val url = new URL("https://quotes.toscrape.com/")
-    val connection = url.openConnection().asInstanceOf[HttpURLConnection]
-    connection.setRequestMethod("GET")
-    println(s"Response status code: ${connection.getResponseCode}")
-    println("Response headers:")
-    connection.getHeaderFields.forEach((key, value) => println(s"$key: $value"))
-    body = scala.io.Source.fromInputStream(connection.getInputStream).mkString
-    println(s"Response body: $body")
-    connection.disconnect()
+val url = new URL("https://quotes.toscrape.com/")
+val connection = url.openConnection().asInstanceOf[HttpURLConnection]
+connection.setRequestMethod("GET")
+println(s"Response status code: ${connection.getResponseCode}")
+println("Response headers:")
+connection.getHeaderFields.forEach((key, value) => println(s"$key: $value"))
+body = scala.io.Source.fromInputStream(connection.getInputStream).mkString
+println(s"Response body: $body")
+connection.disconnect()
 
 ```
 
@@ -505,24 +504,24 @@ into a list of maps, each map representing a single quote.
 
 ```scala
 val selectGeneralBlock = "<div class=\"quote\"[\\s\\S]*?<\\/div>".r
-    val selectQuotes = "<span class=\"text\" itemprop=\"text\">(“.*)<\\/span>".r
-    val selectAuthors = "itemprop=\"author\">(.*)<\\/small>".r
-    val selectTags = "<a class=\"tag\".*?>(.*)<\\/a>".r
+val selectQuotes = "<span class=\"text\" itemprop=\"text\">(“.*)<\\/span>".r
+val selectAuthors = "itemprop=\"author\">(.*)<\\/small>".r
+val selectTags = "<a class=\"tag\".*?>(.*)<\\/a>".r
 
 ```
 
 &ensp;&ensp;&ensp; In my opinion the most difficult part of this task were to select the information needed and for this I used Regular Expression. _selectGeneralBlock_ select only the `<div>` tags with class = "quote". Then, for quotes, authors and tags I identified a pattern and used it to find all the elements which corresponds to the needed information.
 
 ```scala
-        val listOfMaps = ArrayBuffer[Map[String, String]]()
-    val listOfQuotes = selectGeneralBlock.findAllIn(body).toList
+val listOfMaps = ArrayBuffer[Map[String, String]]()
+val listOfQuotes = selectGeneralBlock.findAllIn(body).toList
 
-    for (element <- listOfQuotes) {
-      val quote = selectQuotes.findFirstMatchIn(element).map(_.group(1)).fold("")(_.toString)
-      val author = selectAuthors.findFirstMatchIn(element).map(_.group(1)).fold("")(_.toString)
-      val tags = selectTags.findAllMatchIn(element).map(_.group(1)).mkString("; ")
-      listOfMaps.addOne(Map("quote" -> quote, "author" -> author, "tags" -> tags))
-    }
+for (element <- listOfQuotes) {
+  val quote = selectQuotes.findFirstMatchIn(element).map(_.group(1)).fold("")(_.toString)
+  val author = selectAuthors.findFirstMatchIn(element).map(_.group(1)).fold("")(_.toString)
+  val tags = selectTags.findAllMatchIn(element).map(_.group(1)).mkString("; ")
+  listOfMaps.addOne(Map("quote" -> quote, "author" -> author, "tags" -> tags))
+}
 ```
 &ensp;&ensp;&ensp; Then, in a list all the general blocks are find using _findAllin()_ method, and all of them are stored. Iterating this list, the function searches in each block the quote, the author of it and the tags using regular expression defined before. All this information is stored in  _listOfMaps_ variable.
 
@@ -530,11 +529,11 @@ val selectGeneralBlock = "<div class=\"quote\"[\\s\\S]*?<\\/div>".r
 Encode the data into JSON format. Name the file quotes.json.
 
 ```scala
- val jsonFormat = Json.prettyPrint(Json.toJson(globalListOfMaps))
-    val jsonFile = new File("quotes.json")
-    val writer = new FileWriter(jsonFile)
-    writer.write(jsonFormat.toString())
-    writer.close()
+val jsonFormat = Json.prettyPrint(Json.toJson(globalListOfMaps))
+val jsonFile = new File("quotes.json")
+val writer = new FileWriter(jsonFile)
+writer.write(jsonFormat.toString())
+writer.close()
 
 ```
 &ensp;&ensp;&ensp;This block of Scala code writes a list of maps to a JSON file:
