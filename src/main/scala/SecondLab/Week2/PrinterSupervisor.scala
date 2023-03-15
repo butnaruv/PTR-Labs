@@ -1,14 +1,13 @@
 package SecondLab.Week2
 
-import SecondLab.Week1.SSEPrinter
+import FirstLab.Week4.MinimalTask.SendKill
+import SecondLab.Week1.{SSEPrinter}
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor.{Actor, ActorRef, OneForOneStrategy, Props}
 
 import scala.collection.mutable.ArrayBuffer
 
 case object CreatePrinters
-
-case object SendKill
 
 case class SendTo(message: String, actorIndex: Int)
 
@@ -27,7 +26,6 @@ class PrinterSupervisor extends Actor {
         context.actorOf(SSEPrinter.props)
       }
       println(listOfActors)
-
     case SendTo(message, actorIndex) => listOfActors(actorIndex) ! message
 
   }

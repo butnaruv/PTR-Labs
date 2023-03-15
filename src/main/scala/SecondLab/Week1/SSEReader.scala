@@ -24,6 +24,7 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter: Ac
           val selectTweet = "\"text\":[\\s\\S](.*?),\"source".r
           val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
           ssePrinter ! "From " + self.path.name + " : " + selectedTweet
+          Thread.sleep(1000)
         }
         sourceByteString.runWith(sink)
       }
