@@ -1,8 +1,8 @@
 package SecondLab.Week2
 
+import FirstLab.Week4.MinimalTask.SendKill
 import akka.actor.{Actor, ActorRef, Props}
 
-//case class SendTo(message: String, printerIndex: Int)
 
 class MediatorWorker(printerSupervisor: ActorRef) extends Actor {
   var actorIndex = 0
