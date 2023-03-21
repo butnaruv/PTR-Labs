@@ -6,10 +6,11 @@ import akka.actor.{Actor, ActorRef, Props}
 
 class MediatorWorker(printerSupervisor: ActorRef) extends Actor {
   var actorIndex = 0
+  var nrOfActors = 3;
 
   override def receive: Receive = {
     case message: String =>
-      if (actorIndex < 3) {
+      if (actorIndex < nrOfActors) {
         printerSupervisor ! SendTo(message, actorIndex)
         actorIndex += 1
       } else {
@@ -17,6 +18,9 @@ class MediatorWorker(printerSupervisor: ActorRef) extends Actor {
         printerSupervisor ! SendTo(message, actorIndex)
         actorIndex += 1
       }
+    case message: Int =>
+      nrOfActors = message
+      println("New nr of actors! " + nrOfActors)
   }
 }
 
