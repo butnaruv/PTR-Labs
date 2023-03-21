@@ -36,17 +36,16 @@ class PrinterSupervisor extends Actor {
       senderActor = sender()
       listOfActors(actorIndex) ! message
     case ManagePrinters =>
-      println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + counterOfMessages)
+      println(">>>>>>>>>> Number of messages sent in last 5 seconds: " + counterOfMessages)
       if (counterOfMessages > 30) {
         listOfActors += context.actorOf(SSEPrinter.props)
-        println("Create new actor! the list is " + listOfActors.length)
+        println(">>>>>>>>>> Create new actor! the list is of length  " + listOfActors.length + " : " + listOfActors)
         senderActor ! listOfActors.length
         counterOfMessages = 0
-      } else if (counterOfMessages < 30) {
+      } else if (counterOfMessages < 30 && listOfActors.length > 1) {
         listOfActors(listOfActors.length - 1) ! akka.actor.PoisonPill
-        //println(listOfActors(listOfActors.length-1))
         listOfActors.remove(listOfActors.length - 1)
-        println("I killed an actor: the list is -> " + listOfActors)
+        println(">>>>>>>>>> Kill an actor! the list is of length -> " + listOfActors.length + " : " + listOfActors)
         senderActor ! listOfActors.length
       }
   }

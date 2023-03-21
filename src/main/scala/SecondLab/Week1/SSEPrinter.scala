@@ -26,7 +26,7 @@ class SSEPrinter extends Actor {
           for (i <- indexOfBadWord until (indexOfBadWord + word.length)) {
             messageToAnalyse = messageToAnalyse.updated(i, '*')
           }
-          println("FOUND A PROBLEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+          println("******************************** OUCH! BAD WORD DETECTED!")
           println(message)
         }
       }
