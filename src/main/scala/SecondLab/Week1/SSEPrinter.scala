@@ -1,7 +1,11 @@
 package SecondLab.Week1
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, ActorRef, Props}
+
+import scala.concurrent.duration.DurationInt
 import scala.util.Random
+
+case object SendCounter
 
 class SSEPrinter extends Actor {
   private val badWords: Array[String] = Array(
@@ -12,16 +16,19 @@ class SSEPrinter extends Actor {
     "Jesus wept", "Jesus, Mary and Joseph", "kike", "motherfucker", "nigga", "nigra", "piss", "prick", "pussy", "shit",
     "shit ass", "shite", "sisterfucker", "slut", "son of a bitch", "son of a whore", "spastic", "sweet Jesus", "turd",
     "twat", "wanker")
+  var counterOfMessages = 0
+  var managerActor = sender()
 
   override def receive: Receive = {
     case "kill" => throw new Exception("Something went wrong!")
 
     case message: String =>
-      // var isMessageOk = true
+      counterOfMessages += 1
+      println(self.path.name + " " + counterOfMessages)
+      managerActor ! counterOfMessages
       var messageToAnalyse = message
       for (word <- badWords) {
         if (messageToAnalyse.toLowerCase().contains(word)) {
-          //isMessageOk = false
           val indexOfBadWord = messageToAnalyse.toLowerCase().indexOf(word)
           for (i <- indexOfBadWord until (indexOfBadWord + word.length)) {
             messageToAnalyse = messageToAnalyse.updated(i, '*')
@@ -32,15 +39,16 @@ class SSEPrinter extends Actor {
       }
       val randomInterval = new Random().nextInt(46) + 5
       println("I am " + self.path.name + " printer")
-      //      if(isMessageOk){
-      //        println(message)
-      //      }else
-      //        println("Original : " + message)
       println(messageToAnalyse)
       println("I will sleep for " + randomInterval + " ms.")
       Thread.sleep(randomInterval)
-    //case _ => throw new Exception("Something went wrong!")
+
+    case message: ActorRef => managerActor = message
+
+    case 0 => counterOfMessages = 0
+
   }
+
 }
 
 object SSEPrinter {

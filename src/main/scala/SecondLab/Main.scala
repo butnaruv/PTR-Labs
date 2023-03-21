@@ -3,6 +3,7 @@ package SecondLab
 
 import SecondLab.Week1.{SSEPrinter, SSEReader, Start}
 import SecondLab.Week2.{CreatePrinters, MediatorWorker, PrinterSupervisor}
+import SecondLab.Week3.ManagerActor
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 
@@ -12,7 +13,8 @@ object Main extends App {
   {
     val system = ActorSystem("tweetsManipulation")
     implicit val materializer: Materializer = Materializer.createMaterializer(system)
-    val printerSupervisor = system.actorOf(PrinterSupervisor.props(), "printerSupervisor")
+    val managerActor = system.actorOf(ManagerActor.props, "managerActor")
+    val printerSupervisor = system.actorOf(PrinterSupervisor.props(managerActor), "printerSupervisor")
     val mediatorWorker = system.actorOf(MediatorWorker.props(printerSupervisor), "mediatorWorker")
 
     //Initialization of actors for first checkpoint
