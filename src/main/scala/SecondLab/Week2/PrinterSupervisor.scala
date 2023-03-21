@@ -37,14 +37,12 @@ class PrinterSupervisor extends Actor {
       listOfActors(actorIndex) ! message
     case ManagePrinters =>
       println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + counterOfMessages)
-      if (counterOfMessages > 5) {
-        println("Sending 'Hello, world!' to all printers...")
+      if (counterOfMessages > 30) {
         listOfActors += context.actorOf(SSEPrinter.props)
         println("Create new actor! the list is " + listOfActors.length)
-        //mediatorWorker ! "new Value"
         senderActor ! listOfActors.length
         counterOfMessages = 0
-      } else if (counterOfMessages <= 5) {
+      } else if (counterOfMessages < 30) {
         listOfActors(listOfActors.length - 1) ! akka.actor.PoisonPill
         //println(listOfActors(listOfActors.length-1))
         listOfActors.remove(listOfActors.length - 1)
@@ -55,7 +53,7 @@ class PrinterSupervisor extends Actor {
 
   context.system.scheduler.scheduleAtFixedRate(
     initialDelay = 2.seconds,
-    interval = 5.seconds,
+    interval = 4.seconds,
     receiver = self,
     message = ManagePrinters
   )(context.dispatcher)

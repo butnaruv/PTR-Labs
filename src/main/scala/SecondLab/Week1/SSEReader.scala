@@ -25,18 +25,18 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, ssePrinter: Ac
           //          val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
           //          ssePrinter ! "From " + self.path.name + " : " + selectedTweet
           //println(tweet)
-          if(!tweet.contains("\"message\": panic")){
+          if (!tweet.contains("\"message\": panic")) {
             val selectTweet = "\"text\":[\\s\\S](.*?),\"source".r
             val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
             ssePrinter ! "From " + self.path.name + " : " + selectedTweet
-            Thread.sleep(500)
+            Thread.sleep(200)
           }
           else ssePrinter ! "kill"
-          Thread.sleep(500)
-//          val selectTweet = "\"text\":[\\s\\S](.*?),\"source".r
-//          val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
-//          ssePrinter ! "From " + self.path.name + " : " + selectedTweet
-//          Thread.sleep(1000)
+          Thread.sleep(200)
+          //          val selectTweet = "\"text\":[\\s\\S](.*?),\"source".r
+          //          val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
+          //          ssePrinter ! "From " + self.path.name + " : " + selectedTweet
+          //          Thread.sleep(1000)
         }
         sourceByteString.runWith(sink)
       }
