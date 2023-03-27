@@ -11,7 +11,7 @@ import scala.collection.mutable.ArrayBuffer
 
 case object CreatePrinters
 
-case class SendTo(message: String, actorIndex: Int)
+case class SendTo(message: Tweet, actorIndex: Int)
 
 class PrinterSupervisor(managerActor: ActorRef) extends Actor {
   val listOfActors = new ArrayBuffer[ActorRef]()

@@ -1,9 +1,12 @@
 package SecondLab.Week1
 
+import SecondLab.Week2.Tweet
 import akka.actor.{Actor, ActorRef, Props}
 
-import scala.concurrent.duration.DurationInt
 import scala.util.Random
+import java.net.{HttpURLConnection, URL}
+import scala.collection.mutable.ArrayBuffer
+
 
 case object SendCounter
 
@@ -18,15 +21,42 @@ class SSEPrinter extends Actor {
     "twat", "wanker")
   var counterOfMessages = 0
   var managerActor = sender()
+  var body = ""
+  val url = new URL("http://localhost:4000/emotion_values")
+  val connection = url.openConnection().asInstanceOf[HttpURLConnection]
+  connection.setRequestMethod("GET")
+  body = scala.io.Source.fromInputStream(connection.getInputStream).mkString
+  var myMap = Map[String, Int]()
+  val splitScores = body.split("\r\n").toList
+  splitScores.foreach(element => {
+    val list = element.split("\t")
+    myMap += (list(0) -> list(1).toInt)
+  })
+  connection.disconnect()
 
   override def receive: Receive = {
     case "kill" => throw new Exception("Something went wrong!")
 
-    case message: String =>
+    case message: Tweet =>
+      var sum = 0
+      var counterOfScore = 0
+      var score = 0
+      val wordsWithScores = new ArrayBuffer[String]()
+      val listOfWordsInMessage = message.tweet.split(" ").toList
+      myMap.foreach(element => {
+        if (listOfWordsInMessage.contains(element._1)) {
+          wordsWithScores += element._1
+          counterOfScore += 1
+          sum += element._2
+        }
+      })
+      if (counterOfScore != 0) {
+        score = sum / counterOfScore
+      }
       counterOfMessages += 1
-      println(self.path.name + " " + counterOfMessages)
+      //println(self.path.name + " " + counterOfMessages)
       managerActor ! counterOfMessages
-      var messageToAnalyse = message
+      var messageToAnalyse = message.tweet
       for (word <- badWords) {
         if (messageToAnalyse.toLowerCase().contains(word)) {
           val indexOfBadWord = messageToAnalyse.toLowerCase().indexOf(word)
@@ -40,6 +70,9 @@ class SSEPrinter extends Actor {
       val randomInterval = new Random().nextInt(46) + 5
       println("I am " + self.path.name + " printer")
       println(messageToAnalyse)
+      println("SENTIMENT SCORE : " + score)
+      println("WORDS WITH SCORE: " + wordsWithScores)
+      println("ENGAGEMENT RATIO: " + message.ratio)
       println("I will sleep for " + randomInterval + " ms.")
       Thread.sleep(randomInterval)
 

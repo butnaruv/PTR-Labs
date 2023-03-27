@@ -2,14 +2,14 @@ package SecondLab.Week2
 
 import FirstLab.Week4.MinimalTask.SendKill
 import akka.actor.{Actor, ActorRef, Props}
-
+case class Tweet(tweet: String, ratio: Int)
 
 class MediatorWorker(printerSupervisor: ActorRef) extends Actor {
   var actorIndex = 0
   var nrOfActors = 3;
 
   override def receive: Receive = {
-    case message: String =>
+    case message: Tweet =>
       if (actorIndex < nrOfActors) {
         printerSupervisor ! SendTo(message, actorIndex)
         actorIndex += 1
