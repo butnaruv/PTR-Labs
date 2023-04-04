@@ -11,10 +11,9 @@ import akka.util.ByteString
 import scala.concurrent.{ExecutionContext, Future}
 
 case class Start(url: String)
-
-class SSEReader(implicit mat: Materializer, ec: ExecutionContext, listOfActors: List[ActorRef]) extends Actor {
-  //val listOfActors = List(ssePrinter, sentimentScore)
-
+case class TweetAndID(tweet: String, id: Int)
+class SSEReader(implicit mat: Materializer, ec: ExecutionContext, id: Int, listOfActors: List[ActorRef]) extends Actor {
+  var tweetID = id
   override def receive: Receive = {
     case Start(url) =>
       implicit val classicSystem: akka.actor.ClassicActorSystemProvider = ActorSystem()
@@ -23,23 +22,14 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, listOfActors: 
         val sourceByteString: Source[ByteString, Any]#Repr[String] = response.entity.dataBytes.map(_.utf8String)
         val sink = Sink.foreach[String] { (tweet: String) =>
           if (!tweet.contains("\"message\": panic")) {
-//            val selectedFavouritesCount = "\"favourites_count\":(.*?),".r.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
-//            val selectedRetweetCount = "\"retweet_count\":(.*?),".r.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
-//            val selectedFollowersCount = "\"followers_count\":(.*?),".r.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
-//            val engagementRation = (selectedFavouritesCount.toInt + selectedRetweetCount.toInt) / selectedFollowersCount.toInt
-//            val selectTweet = "\"text\":[\\s\\S](.*?),\"source".r
-//            val selectedTweet = selectTweet.findFirstMatchIn(tweet).map(_.group(1)).fold("")(_.toString)
-
-            for(element <- listOfActors){
-              element ! tweet
+            for (element <- listOfActors) {
+              element ! TweetAndID(tweet, tweetID)
             }
-//            ssePrinter ! Tweet("From " + self.path.name + " : " + selectedTweet, engagementRation)
-//            sentimentScore ! selectedTweet
+            tweetID += 2
             Thread.sleep(200)
           }
           else listOfActors(0) ! "kill"
           Thread.sleep(200)
-
         }
         sourceByteString.runWith(sink)
       }
@@ -50,5 +40,5 @@ class SSEReader(implicit mat: Materializer, ec: ExecutionContext, listOfActors: 
 //  def props(implicit mat: Materializer, ec: ExecutionContext, listOfActors: List[ActorRef]): Props =Props(new SSEReader())
 //}
 object SSEReader {
-  def props(implicit mat: Materializer, ec: ExecutionContext, listOfActors: List[ActorRef]): Props =Props(new SSEReader())
+  def props(implicit mat: Materializer, ec: ExecutionContext, id: Int, listOfActors: List[ActorRef]): Props = Props(new SSEReader())
 }

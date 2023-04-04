@@ -7,9 +7,9 @@ import scala.collection.mutable.ArrayBuffer
 
 case object CreatePrinters
 
-case class SendTo(message: String, actorIndex: Int)
+case class SendTo(message: TweetAndID, actorIndex: Int)
 
-class PrinterSupervisor(managerActor: ActorRef, batchActor : ActorRef) extends Actor {
+class PrinterSupervisor(managerActor: ActorRef, aggregator : ActorRef) extends Actor {
   val listOfActors = new ArrayBuffer[ActorRef]()
   var actorIndex = 0
   var senderActor = sender()
@@ -23,7 +23,7 @@ class PrinterSupervisor(managerActor: ActorRef, batchActor : ActorRef) extends A
       managerActor ! ReadyToStart
       for (i <- 0 until 3) {
         listOfActors += context.actorOf(SSEPrinter.props)
-        listOfActors(i) ! ActorReferences(managerActor, batchActor)
+        listOfActors(i) ! ActorReferences(managerActor, aggregator)
       }
       println(listOfActors)
 
@@ -51,5 +51,5 @@ class PrinterSupervisor(managerActor: ActorRef, batchActor : ActorRef) extends A
 }
 
 object PrinterSupervisor {
-  def props(managerActor: ActorRef, batchActor : ActorRef): Props = Props(new PrinterSupervisor(managerActor, batchActor))
+  def props(managerActor: ActorRef, aggregator : ActorRef): Props = Props(new PrinterSupervisor(managerActor, aggregator))
 }
