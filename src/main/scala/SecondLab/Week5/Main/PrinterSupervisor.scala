@@ -30,7 +30,7 @@ class PrinterSupervisor(managerActor: ActorRef, aggregator : ActorRef) extends A
     case SendTo(message, actorIndex) =>
       senderActor = sender()
       listOfActors(actorIndex) ! message
-      Thread.sleep(100)
+      //Thread.sleep(100)
 
     case message: Boolean =>
       if (!message) {

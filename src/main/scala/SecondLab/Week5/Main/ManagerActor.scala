@@ -36,7 +36,7 @@ class ManagerActor extends Actor {
   }
 
   context.system.scheduler.scheduleAtFixedRate(
-    initialDelay = 2.seconds,
+    initialDelay = 4.seconds,
     interval = 4.seconds,
     receiver = self,
     message = ManagePrinters

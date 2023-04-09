@@ -10,7 +10,7 @@ object Main extends App {
     val system = ActorSystem("tweetsManipulation")
     implicit val materializer: Materializer = Materializer.createMaterializer(system)
     val managerActor = system.actorOf(ManagerActor.props, "managerActor")
-    val batchPrinter = system.actorOf(BatchPrinter.props(10, 5), "batchPrinter")
+    val batchPrinter = system.actorOf(BatchPrinter.props(10, 15), "batchPrinter")
     val aggregatorActor = system.actorOf(AggregatorActor.props(batchPrinter), "aggreatorActor")
     val sentimentScoreActor = system.actorOf(SentimentScoreActor.props(aggregatorActor), "sentimentScoreActor")
     val engagementRatioActor = system.actorOf(EngagementRatioActor.props(aggregatorActor), "engagementRatioActor")

@@ -35,7 +35,7 @@ class SentimentScoreActor(aggregatorActor: ActorRef) extends Actor{
       if (counterOfScore != 0) {
         score = sum / counterOfScore
       }
-      println(self.path.name)
+      //println(self.path.name)
 //      println("sentimentScore: " + score)
       //println("Sentiment score: " + message.id)
       aggregatorActor ! TweetAndID(score.toString, message.id)

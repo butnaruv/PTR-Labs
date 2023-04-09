@@ -9,6 +9,7 @@ class MediatorWorker(printerSupervisor: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case message: TweetAndID =>
+      //Thread.sleep(1000)
       if (actorIndex < nrOfActors) {
         printerSupervisor ! SendTo(message, actorIndex)
         actorIndex += 1

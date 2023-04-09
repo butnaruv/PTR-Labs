@@ -12,6 +12,9 @@ case object PrintBatch
 
 class BatchPrinter(sizeOfBatch: Int, intervalOfPrinting: Int) extends Actor {
   val listOfTweets = new ArrayBuffer[TweetText]()
+  var initialIntervalOfPrinting  = intervalOfPrinting
+  var startTime = System.nanoTime()
+  var elapsedTime: Double = 0.0
   //  var mapOfTweets = Map[Int, List[]]()
 
   override def receive: Receive = {
@@ -19,20 +22,19 @@ class BatchPrinter(sizeOfBatch: Int, intervalOfPrinting: Int) extends Actor {
       if (listOfTweets.length < sizeOfBatch) {
         listOfTweets += message
         println("Size of batch: " + listOfTweets.size)
+
       } else {
+        val currentTime: Long = System.nanoTime()
+        elapsedTime = (currentTime - startTime) / 1e9
         PrintBatcher(listOfTweets)
         listOfTweets += message
+        startTime = System.nanoTime()
+        RestartTimer()
       }
     case PrintBatch =>
       PrintBatcher(listOfTweets)
   }
-
-  context.system.scheduler.scheduleAtFixedRate(
-    initialDelay = intervalOfPrinting.seconds,
-    interval = intervalOfPrinting.seconds,
-    receiver = self,
-    message = PrintBatch
-  )(context.dispatcher)
+  RestartTimer()
 
   def PrintBatcher(listOfTweets: ArrayBuffer[TweetText]): Unit = {
     println("----------------------Printed Batch----------------------")
@@ -46,6 +48,16 @@ class BatchPrinter(sizeOfBatch: Int, intervalOfPrinting: Int) extends Actor {
       println("-------------------------------------------------------")
     }
     listOfTweets.clear()
+  }
+  def RestartTimer(): Unit ={
+
+    context.system.scheduler.scheduleAtFixedRate(
+      initialDelay = initialIntervalOfPrinting.seconds,
+      interval = (intervalOfPrinting + elapsedTime.toInt).seconds,
+      receiver = self,
+      message = PrintBatch,
+      //   println(initialIntervalOfPrinting)
+    )(context.dispatcher)
   }
 }
 
