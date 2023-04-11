@@ -12,4 +12,10 @@ libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.6.16"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.4"
 libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.2.6"
 libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.6.16"
-
+libraryDependencies ++= Seq(
+  "com.typesafe.slick" %% "slick" % "3.3.3",
+  "org.postgresql" % "postgresql" % "42.3.4",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
+  "com.github.tminglei" %% "slick-pg" % "0.20.3",
+  "com.github.tminglei" %% "slick-pg_play-json" % "0.20.3"
+)
